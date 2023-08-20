@@ -6,7 +6,7 @@ This is a simple python program, that is designed to speed up the workflow of ge
 
 1. Download the main project directory.
 2. Extract to a suitable location
-3. Add parent directory location to PYTHONPATH environment variable: export PYTHONPATH=$HOME/software/[parent_directory]/:$PYTHONPATH
+3. Add parent directory location to PYTHONPATH environment variable: export PYTHONPATH=[path_to_parent_directory]/:$PYTHONPATH
 
 ## Dependencies
 
