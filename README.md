@@ -20,4 +20,9 @@ The [ASH](https://github.com/RagnarB83/ash) multiscale modelling program is util
     - pdbfile: File containing the list of attractors, given as a string e.g. "ethene.pdb"
     - interest_atoms: List of atoms that you interested in, given as a list of atom indices (counting starts from 0) e.g. [0,1]
     - final_cube: Can be True or False. If set to True, will append attractors corresponding to atoms of interest to ELF isosurface cube file. Requires the presence of the .cub file produced by Multiwfn, where the basename is the same as the xyz file name e.g. "ethene.cub"
+3. What is produced ?
+    - [basename]_all.xyz --> Contains all CORE and VALENCE attractors appended as dummy atoms to molecular geometry. This is also present in stdout.
+    - [basename]_requested.xyz --> Contains all VALENCE attractors corresponding to atoms of interest appended as dummy atoms to molecular geometry.
+    - [basename]_updated.cube --> Produced if final_cube was set to True. Contains ELF isosurface, molecular geometry and VALENCE attractors (all or of interest). This can be visualised in programs such as Chemcraft, Avogadro and VMD.
+
 
