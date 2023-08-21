@@ -2,6 +2,7 @@ import math
 import shutil
 import sys
 import os
+import re
 
 # Defining covalent radii
 cov_radii = {"H":0.31, "He":0.28, "Li":1.28, "Be":0.96, "B":0.85, "C":0.76,
@@ -141,22 +142,35 @@ def write_attractor_xyz(assignments, attractors, xyzfile, interest_atoms):
             file.write("\n")
             if assignment[1] == "VALENCE":
                 attractors_bohrs.append([attractors[i][1][0]*1.88973, attractors[i][1][1]*1.88973, attractors[i][1][2]*1.88973])
+    
     return attractors_bohrs
 
 # Function to append requested attractors to cube file for visualistion
-# This function requires ASH to be installed
-def append_cube(cubefile, requested_attractors_bohrs):
-    try:
-        import ash.functions.functions_elstructure as cube
-        cubetowrite = cube.read_cube(cubefile)
-        cubetowrite["numatoms"] += len(requested_attractors_bohrs)
-        for attractor_coords in requested_attractors_bohrs:
-            cubetowrite["elems"].append(0)
-            cubetowrite["coords"].append(attractor_coords)
-        cube.write_cube(cubetowrite, name=f"{cubefile[:-4]}_updated")
-    except:
-        final_cube = False
-        print("\nYou must have ASH installed to utilise final cube file creation feature.")
+def append_cube(cubefile, attractors_bohrs):
+    # Opening original cubefile
+    contents = None
+    with open(cubefile, "r") as original_cube:
+        contents = original_cube.readlines()
+    
+    # Gettings number of atoms to know the position at which to start inserting attractors
+    num_atoms = int(contents[2].split()[0])
+    start_position = 6 + num_atoms
+   
+    # Replacing number of atoms to reflect added attractors
+    new_num_atoms = num_atoms + len(attractors_bohrs)
+    num_atom_line = re.split(f"(\s+)", contents[2])
+    num_atom_line[2] = str(new_num_atoms)
+    contents[2] = "".join(num_atom_line)
+
+    # Loop through list of attractors, adding to original_cube_contents
+    for attractor in attractors_bohrs:
+        formatted_attractor = f"{'0':>5}{0.0:>12.6f}{attractor[0]:>12.6f}{attractor[1]:>12.6f}{attractor[2]:>12.6f}\n"
+        contents.insert(start_position, formatted_attractor)
+        start_position += 1
+
+    # Create new cubefile, containing attractors
+    with open(f"{cubefile[:-4]}_updated.cube", "w") as new_cube:
+        new_cube.write("".join(contents))
 
 # Main function of program
 def auto_elf_assign(xyzfile, attractorfile, interest_atoms = [], final_cube=False):
@@ -182,17 +196,15 @@ def auto_elf_assign(xyzfile, attractorfile, interest_atoms = [], final_cube=Fals
 
     # Output assignments to txt file
     output_assignments(assignments, xyzfile)
-     
+        
     # Confirmation messages 
     print("="*120)
     print(f"Success! Ending Assignment for {xyzfile[:-4]}\n")
     print(f"Valence attractors corresponding to atoms of interest (if specified) were written to {xyzfile[:-4]}_requested.xyz")
     print(f"All valence attractors were written to {xyzfile[:-4]}_all.xyz")
     
-    # Begin process of editing cube file to contain relevant attractors
-    # If the user does not have ASH installed, a message will be printed and the program will exit normally.
+    # Begin process of editing cube file to contain relevant attractors if final_cube has been set to True
     if final_cube == True and os.path.isfile(f"{xyzfile[:-4]}.cub"):
-        print("\nAttempting to start ASH now to begin appending of cube file, goodbye!\n")
         append_cube(f"{xyzfile[:-4]}.cub", attractors_bohrs)
         print(f"{xyzfile[:-4]}_updated.cub created, where (requested) valence attractors have been apppended to cube file.")
     else:
