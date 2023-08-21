@@ -8,8 +8,11 @@ This is a simple python program, that is designed to speed up the workflow of ge
 
 2. Extract to a suitable location
 
-3. Add parent directory location to PYTHONPATH environment variable: export PYTHONPATH=[path_to_parent_directory]:$PYTHONPATH 
-    e.g. export PYTHONPATH=$HOME/software/python_programming:$PYTHONPATH where python_programming directory contains the autoelf directory with all required project files.
+3. Add parent directory location to PYTHONPATH environment variable, for example:
+    ```
+    export PYTHONPATH=$HOME/software/python_programming:$PYTHONPATH
+    ```
+    Where the python_programming directory contains the autoelf directory with all project files.
 
 ## Example Usage
 
