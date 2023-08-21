@@ -169,7 +169,7 @@ def append_cube(cubefile, attractors_bohrs):
         start_position += 1
 
     # Create new cubefile, containing attractors
-    with open(f"{cubefile[:-4]}_updated.cube", "w") as new_cube:
+    with open(f"{cubefile[:-4]}_updated.cub", "w") as new_cube:
         new_cube.write("".join(contents))
 
 # Main function of program
