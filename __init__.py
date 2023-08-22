@@ -3,6 +3,8 @@ import shutil
 import sys
 import os
 import re
+import linecache
+import itertools
 
 # Defining covalent radii
 cov_radii = {"H":0.31, "He":0.28, "Li":1.28, "Be":0.96, "B":0.85, "C":0.76,
@@ -18,6 +20,8 @@ cov_radii = {"H":0.31, "He":0.28, "Li":1.28, "Be":0.96, "B":0.85, "C":0.76,
                 "Re":1.51, "Os":1.44, "Ir":1.41, "Pt":1.36, "Au":1.36, "Hg":1.32,
                 "Tl":1.45, "Pb":1.46, "Bi":1.48, "Po":1.40, "At":1.50, "Rn":1.50}
 
+elements = list(cov_radii.keys())
+
 # Function to get and return geometry of molecule
 def get_geom(xyzfile):
     geometry = []
@@ -32,6 +36,18 @@ def get_geom(xyzfile):
             geometry.append([el_symbol, [float(xcoord), float(ycoord), float(zcoord)]])
     
     return geometry
+
+def get_geom_from_cube(cubefile):
+    geometry = []
+    # Get number of atoms
+    num_atoms = int(linecache.getline(cubefile, 3).split()[0])
+    # Loop through cube, starting at beginning of geometry specification
+    with open(cubefile, "r") as cube:
+        for line in itertools.islice(cube, 6, 6+num_atoms):
+              # Getting element symbol and coordinates
+              current = line.split()
+              el_symbol = elements[int(current[0])-1]
+              geometry.append([el_symbol, [float(current[2]), float(current[3]), float(current[4])]])
 
 # Function to get and return coordinates of attractors
 def get_attractors(pdbfile):
