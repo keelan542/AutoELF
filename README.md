@@ -2,6 +2,8 @@
 
 This is a simple python program, that is designed to speed up the workflow of generating Electron Localisation Function (ELF) plots. This program assumes that the attractors file used as input has been generated using [Multiwfn](http://sobereva.com/multiwfn/), and is in the .pdb file format. 
 
+Covalent radii used are taken from [here](https://periodictable.com/Properties/A/CovalentRadius.html).
+
 ## Installation
 
 1. Download the main project directory.
