@@ -22,11 +22,12 @@ cov_radii = {"H":0.31, "He":0.28, "Li":1.28, "Be":0.96, "B":0.85, "C":0.76,
 
 elements = list(cov_radii.keys())
 
+# Funciton to get geometry from cubefile in angstroms
 def get_geom_from_cube(cubefile):
     geometry = []
     angstrom = 0.529177
     cubename = ""
-    
+
     # Get number of atoms
     num_atoms = int(linecache.getline(cubefile, 3).split()[0])
     # Loop through cube, starting at beginning of geometry specification
@@ -37,7 +38,7 @@ def get_geom_from_cube(cubefile):
               el_symbol = elements[int(current[0])-1]
               geometry.append([el_symbol, [float(current[2])*angstrom, float(current[3])*angstrom, float(current[4])*angstrom]])
 
-    # Checking if the cube has been provided with .cub or .cube extension, for naming purposes
+    # Checking if the cube has been provided with .cub or .cube extension, for naming purposes later on
     if cubefile.endswith(".cub"):
         cubename = cubefile[:-4]
     elif cubefile.endswith(".cube"):
@@ -91,7 +92,6 @@ def frange(radius, scaling_factor=1.00):
 # Function to assign attractors to atoms, and specify whether they are CORE or VALENCE
 def assign(distance_matrix, core_threshold=0.4):
     assignments = []
-    problems = []
     for attractor in distance_matrix:
         core_atom_list = []
         valence_atom_list = []
