@@ -22,21 +22,6 @@ cov_radii = {"H":0.31, "He":0.28, "Li":1.28, "Be":0.96, "B":0.85, "C":0.76,
 
 elements = list(cov_radii.keys())
 
-# Function to get and return geometry of molecule
-def get_geom(xyzfile):
-    geometry = []
-    with open(xyzfile) as file:
-        # Skip first two lines containing header
-        next(file)
-        next(file)
-        
-        # Loop through each line and grab the element symbol and coordinates
-        for line in file:
-            el_symbol, xcoord, ycoord, zcoord = line.split()
-            geometry.append([el_symbol, [float(xcoord), float(ycoord), float(zcoord)]])
-    
-    return geometry
-
 def get_geom_from_cube(cubefile):
     geometry = []
     angstrom = 0.529177
