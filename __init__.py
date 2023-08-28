@@ -49,6 +49,8 @@ def get_geom_from_cube(cubefile):
               el_symbol = elements[int(current[0])-1]
               geometry.append([el_symbol, [float(current[2]), float(current[3]), float(current[4])]])
 
+    return geometry
+
 # Function to get and return coordinates of attractors
 def get_attractors(pdbfile):
     coords = []
