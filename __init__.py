@@ -137,32 +137,6 @@ def output_assignments(assignments):
     # Writing each assignment to file and to stdout
     for assignment in assignments:  
         print(f"{assignment[0]:<13}{assignment[1]:<16}{','.join(atom[0] for atom in assignment[2]):<9}{','.join(str(atom_index[1]) for atom_index in assignment[2]):<7}")   
-    
-# Function to write only the relevant requested attractor assignments to a xyz
-def write_attractor_xyz(assignments, attractors, xyzfile, interest_atoms):
-    attractors_bohrs = []
-
-    if len(interest_atoms) > 0:
-        shutil.copyfile(xyzfile, f"{xyzfile[:-4]}_requested.xyz")
-        with open(f"{xyzfile[:-4]}_requested.xyz", "a") as file:
-            for i, assignment in enumerate(assignments):
-                assigned_atom_indices = [atom_index[1] for atom_index in assignment[2]]
-                if assignment[1] == "VALENCE":
-                    for index in assigned_atom_indices:
-                        if index in interest_atoms:
-                            file.write(f"X\t{attractors[i][1][0]:.8f}\t{attractors[i][1][1]:.8f}\t{attractors[i][1][2]:.8f}")
-                            file.write("\n")
-                            attractors_bohrs.append([attractors[i][1][0]*1.88973, attractors[i][1][1]*1.88973, attractors[i][1][2]*1.88973])
-
-    shutil.copyfile(xyzfile, f"{xyzfile[:-4]}_all.xyz")
-    with open(f"{xyzfile[:-4]}_all.xyz", "a") as file:
-        for i, assignment in enumerate(assignments):
-            file.write(f"X\t{attractors[i][1][0]:.8f}\t{attractors[i][1][1]:.8f}\t{attractors[i][1][2]:.8f}")
-            file.write("\n")
-            if assignment[1] == "VALENCE":
-                attractors_bohrs.append([attractors[i][1][0]*1.88973, attractors[i][1][1]*1.88973, attractors[i][1][2]*1.88973])
-    
-    return attractors_bohrs
 
 # Function to return VALENCE attractors in bohrs
 # If interest_atoms is specified, only return VALENCE attractors of interest
@@ -175,10 +149,12 @@ def get_relevant_attractors_bohrs(assignments, attractors, interest_atoms):
             for index in assigned_atom_indices:
                 if index in interest_atoms:
                     attractors_bohrs.append([attractors[i][1][0]*1.88973, attractors[i][1][1]*1.88973, attractors[i][1][2]*1.88973])
+                    break
         elif assignment[1] == "VALENCE":
             attractors_bohrs.append([attractors[i][1][0]*1.88973, attractors[i][1][1]*1.88973, attractors[i][1][2]*1.88973])
 
     return attractors_bohrs
+
 # Function to append requested attractors to cube file for visualistion
 def append_cube(cubefile, attractors_bohrs):
     # Opening original cubefile
@@ -207,14 +183,14 @@ def append_cube(cubefile, attractors_bohrs):
         new_cube.write("".join(contents))
 
 # Main function of program
-def auto_elf_assign(xyzfile, attractorfile, interest_atoms = [], final_cube=False):
+def auto_elf_assign(cubefile, attractorfile, interest_atoms = []):
     # Printing a message to indicate the start of assignment
     print("="*120)
-    print(f"Starting assignment for {xyzfile[:-4]}")
+    print(f"Starting assignment for {cubefile[:-4]}")
     print("="*120)
 
-    # Get geometry from xyz file
-    geom = get_geom(xyzfile)
+    # Get geometry from cube file
+    geom = get_geom_from_cube(cubefile)
 
     # Get attractors from pdb file
     attractors = get_attractors(attractorfile)
@@ -225,23 +201,17 @@ def auto_elf_assign(xyzfile, attractorfile, interest_atoms = [], final_cube=Fals
     # Get assignments of attractors to CORE and VALENCE
     assignments = assign(distance_matrix)
     
-    # Write relevelant assignments to xyz file  
-    attractors_bohrs = write_attractor_xyz(assignments, attractors, interest_atoms)
+    # Get (relevant) attractors in units of bohrs  
+    attractors_bohrs = get_relevant_attractors_bohrs(assignments, attractors, interest_atoms)
 
     # Output assignments to stdout
     output_assignments(assignments)
         
     # Confirmation messages 
     print("="*120)
-    print(f"Success! Ending Assignment for {xyzfile[:-4]}\n")
-    print(f"Valence attractors corresponding to atoms of interest (if specified) were written to {xyzfile[:-4]}_requested.xyz")
-    print(f"All valence attractors were written to {xyzfile[:-4]}_all.xyz")
-    
-    # Begin process of editing cube file to contain relevant attractors if final_cube has been set to True
-    if final_cube == True and os.path.isfile(f"{xyzfile[:-4]}.cub"):
-        append_cube(f"{xyzfile[:-4]}.cub", attractors_bohrs)
-        print(f"{xyzfile[:-4]}_updated.cub created, where (requested) valence attractors have been apppended to cube file.")
-    else:
-        print(f"\nWarning: No file named {xyzfile[:-4]}.cub was found for appending attractors to.")
-    print("="*120)
+    print(f"Success! Ending Assignment for {cubefile[:-4]}\n")
 
+    # Begin process of editing cube file to contain (relevant) VALENCE attractors
+    append_cube(cubefile, attractors_bohrs)
+    print(f"{cubefile[:-4]}_updated.cub created, where (requested) valence attractors have been apppended to cube file.")
+    print("="*120)
