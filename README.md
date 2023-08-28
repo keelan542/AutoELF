@@ -28,7 +28,7 @@ This is a simple python program, that is designed to speed up the workflow of ge
     ``` 
     We have specified the two required positional arguments, xyzfile and pdbfile. We have also specified that we are interested in any VALENCE attractors that are assigned to atoms 0 and 1 (the two carbon atoms). Finally, we have specified that we would like to add any VALENCE attractors of interest to the provided cube file, so that we may visualise everything (geometry, ELF isosurface and attractors) together easily.
 
-3. We execute the command : python3 ethene.py
+3. Execute command: python3 ethene.py
 
 4. Output:
     ![ethene_example](ethene_example.PNG) 
