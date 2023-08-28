@@ -39,6 +39,7 @@ def get_geom(xyzfile):
 
 def get_geom_from_cube(cubefile):
     geometry = []
+    angstrom = 0.529177
     # Get number of atoms
     num_atoms = int(linecache.getline(cubefile, 3).split()[0])
     # Loop through cube, starting at beginning of geometry specification
@@ -47,7 +48,7 @@ def get_geom_from_cube(cubefile):
               # Getting element symbol and coordinates
               current = line.split()
               el_symbol = elements[int(current[0])-1]
-              geometry.append([el_symbol, [float(current[2]), float(current[3]), float(current[4])]])
+              geometry.append([el_symbol, [float(current[2])*angstrom, float(current[3])*angstrom, float(current[4])*angstrom]])
 
     return geometry
 
