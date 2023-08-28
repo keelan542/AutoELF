@@ -128,8 +128,8 @@ def assign(distance_matrix, core_threshold=0.4):
 
     return assignments
 
-# Function to output all CORE and VALENCE assignments to stdout and also to file
-def output_assignments(assignments, xyzfile):
+# Function to output all CORE and VALENCE assignments to stdout
+def output_assignments(assignments):
     assignments = sorted(assignments, key = lambda x: x[1], reverse=True)
     # Header line for listing out all attractors and their assignments
     print(f"Attractor    Core/Valence    Atoms    Indices")
@@ -164,6 +164,21 @@ def write_attractor_xyz(assignments, attractors, xyzfile, interest_atoms):
     
     return attractors_bohrs
 
+# Function to return VALENCE attractors in bohrs
+# If interest_atoms is specified, only return VALENCE attractors of interest
+def get_relevant_attractors_bohrs(assignments, attractors, interest_atoms):
+    attractors_bohrs = []
+
+    for i, assignment in enumerate(assignments):
+        assigned_atom_indices = [atom_index[1] for atom_index in assignment[2]]
+        if assignment[1] == "VALENCE" and len(interest_atoms) > 0:
+            for index in assigned_atom_indices:
+                if index in interest_atoms:
+                    attractors_bohrs.append([attractors[i][1][0]*1.88973, attractors[i][1][1]*1.88973, attractors[i][1][2]*1.88973])
+        elif assignment[1] == "VALENCE":
+            attractors_bohrs.append([attractors[i][1][0]*1.88973, attractors[i][1][1]*1.88973, attractors[i][1][2]*1.88973])
+
+    return attractors_bohrs
 # Function to append requested attractors to cube file for visualistion
 def append_cube(cubefile, attractors_bohrs):
     # Opening original cubefile
@@ -211,10 +226,10 @@ def auto_elf_assign(xyzfile, attractorfile, interest_atoms = [], final_cube=Fals
     assignments = assign(distance_matrix)
     
     # Write relevelant assignments to xyz file  
-    attractors_bohrs = write_attractor_xyz(assignments, attractors, xyzfile, interest_atoms)
+    attractors_bohrs = write_attractor_xyz(assignments, attractors, interest_atoms)
 
-    # Output assignments to txt file
-    output_assignments(assignments, xyzfile)
+    # Output assignments to stdout
+    output_assignments(assignments)
         
     # Confirmation messages 
     print("="*120)
