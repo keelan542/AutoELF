@@ -25,6 +25,8 @@ elements = list(cov_radii.keys())
 def get_geom_from_cube(cubefile):
     geometry = []
     angstrom = 0.529177
+    cubename = ""
+    
     # Get number of atoms
     num_atoms = int(linecache.getline(cubefile, 3).split()[0])
     # Loop through cube, starting at beginning of geometry specification
@@ -35,7 +37,13 @@ def get_geom_from_cube(cubefile):
               el_symbol = elements[int(current[0])-1]
               geometry.append([el_symbol, [float(current[2])*angstrom, float(current[3])*angstrom, float(current[4])*angstrom]])
 
-    return geometry
+    # Checking if the cube has been provided with .cub or .cube extension, for naming purposes
+    if cubefile.endswith(".cub"):
+        cubename = cubefile[:-4]
+    elif cubefile.endswith(".cube"):
+        cubename = cubefile[:-5]
+
+    return geometry, cubename
 
 # Function to get and return coordinates of attractors
 def get_attractors(pdbfile):
@@ -169,19 +177,19 @@ def append_cube(cubefile, attractors_bohrs):
 
 # Main function of program
 def auto_elf_assign(cubefile, attractorfile, interest_atoms = []):
-    # Printing a message to indicate the start of assignment
-    print("="*120)
-    print(f"Starting assignment for {cubefile[:-4]}")
-    print("="*120)
-
     # Get geometry from cube file
-    geom = get_geom_from_cube(cubefile)
+    geom, cubename = get_geom_from_cube(cubefile)
 
     # Get attractors from pdb file
     attractors = get_attractors(attractorfile)
 
     # Get distance matrix
     distance_matrix = calc_distances(geom, attractors)
+
+    # Printing a message to indicate the start of assignment
+    print("="*120)
+    print(f"Starting assignment for {cubename}")
+    print("="*120)
     
     # Get assignments of attractors to CORE and VALENCE
     assignments = assign(distance_matrix)
@@ -194,9 +202,9 @@ def auto_elf_assign(cubefile, attractorfile, interest_atoms = []):
         
     # Confirmation messages 
     print("="*120)
-    print(f"Success! Ending Assignment for {cubefile[:-4]}\n")
+    print(f"Success! Ending Assignment for {cubename}\n")
 
     # Begin process of editing cube file to contain (relevant) VALENCE attractors
     append_cube(cubefile, attractors_bohrs)
-    print(f"{cubefile[:-4]}_updated.cub created, where (requested) valence attractors have been apppended to cube file.")
+    print(f"{cubename}_updated.cub created, where (requested) valence attractors have been apppended to original cube file.")
     print("="*120)
