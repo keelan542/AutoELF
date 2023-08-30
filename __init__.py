@@ -22,11 +22,21 @@ cov_radii = {"H":0.31, "He":0.28, "Li":1.28, "Be":0.96, "B":0.85, "C":0.76,
 
 elements = list(cov_radii.keys())
 
+# Function to determine if supplied cubefile has .cub or .cube extension
+def cub_or_cube(cubefile):
+    cubename = ""
+    if cubefile.endswith(".cub"):
+        cubename = cubefile[:-4]
+    elif cubefile.endswith(".cube"):
+        cubename = cubefile[:-5]
+    
+    return cubename
+
 # Funciton to get geometry from cubefile in angstroms
 def get_geom_from_cube(cubefile):
     geometry = []
     angstrom = 0.529177
-    cubename = ""
+    cubename = cub_or_cube(cubefile)
 
     # Get number of atoms
     num_atoms = int(linecache.getline(cubefile, 3).split()[0])
@@ -37,12 +47,6 @@ def get_geom_from_cube(cubefile):
               current = line.split()
               el_symbol = elements[int(current[0])-1]
               geometry.append([el_symbol, [float(current[2])*angstrom, float(current[3])*angstrom, float(current[4])*angstrom]])
-
-    # Checking if the cube has been provided with .cub or .cube extension, for naming purposes later on
-    if cubefile.endswith(".cub"):
-        cubename = cubefile[:-4]
-    elif cubefile.endswith(".cube"):
-        cubename = cubefile[:-5]
 
     return geometry, cubename
 
