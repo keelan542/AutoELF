@@ -154,6 +154,8 @@ def get_relevant_attractors_bohrs(assignments, attractors, interest_atoms):
 
 # Function to append requested attractors to cube file for visualistion
 def append_cube(cubefile, attractors_bohrs):
+    cubename = cub_or_cube(cubefile)
+
     # Opening original cubefile
     contents = None
     with open(cubefile, "r") as original_cube:
@@ -176,7 +178,7 @@ def append_cube(cubefile, attractors_bohrs):
         start_position += 1
 
     # Create new cubefile, containing attractors
-    with open(f"{cubefile[:-4]}_updated.cub", "w") as new_cube:
+    with open(f"{cubename}_updated.cub", "w") as new_cube:
         new_cube.write("".join(contents))
 
 # Main function of program
