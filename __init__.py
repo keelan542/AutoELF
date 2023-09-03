@@ -284,7 +284,7 @@ def append_cube(cubefile, attractors_bohrs):
 # Main function of program
 def auto_elf_assign(cubefile, attractorfile, interest_atoms=[]):
     # Get geometry from cube file
-    geom, cubename = get_geom_from_cube(cubefile)
+    geom, cube_basename = get_geom_from_cube(cubefile)
 
     # Get attractors from pdb file
     attractors = get_attractors(attractorfile)
@@ -294,7 +294,7 @@ def auto_elf_assign(cubefile, attractorfile, interest_atoms=[]):
 
     # Printing a message to indicate the start of assignment
     print("=" * 120)
-    print(f"Starting assignment for {cubename}")
+    print(f"Starting assignment for {cube_basename}")
     print("=" * 120)
 
     # Get assignments of attractors to CORE and VALENCE
@@ -310,11 +310,13 @@ def auto_elf_assign(cubefile, attractorfile, interest_atoms=[]):
 
     # Confirmation messages
     print("=" * 120)
-    print(f"Success! Ending Assignment for {cubename}\n")
+    print(f"Success! Ending Assignment for {cube_basename}\n")
 
     # Begin process of editing cube file to contain (relevant) VALENCE attractors
     append_cube(cubefile, attractors_bohrs)
     print(
-        f"{cubename}_updated.cub created, where (requested) valence attractors have been apppended to original cube file."
+        f"{cube_basename}_updated.cub created, where (requested) valence attractors have been apppended to original cube file."
     )
     print("=" * 120)
+
+    return cube_basename
