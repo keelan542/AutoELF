@@ -266,7 +266,7 @@ def append_cube(cubefile, attractors_bohrs):
 
     # Replacing number of atoms to reflect added attractors
     new_num_atoms = num_atoms + len(attractors_bohrs)
-    num_atom_line = re.split(f"(\s+)", contents[2])
+    num_atom_line = re.split(f"(\\s+)", contents[2])
     num_atom_line[2] = str(new_num_atoms)
     contents[2] = "".join(num_atom_line)
 
